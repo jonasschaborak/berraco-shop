@@ -13,6 +13,7 @@ type ShirtMeshProps = {
   visible: boolean;
   selected: boolean;
   dimmed: boolean;
+  delay?: number;
   onSelect: () => void;
 };
 
@@ -23,6 +24,7 @@ export function ShirtMesh({
   visible,
   selected,
   dimmed,
+  delay = 0,
   onSelect,
 }: ShirtMeshProps) {
   const group = useRef<THREE.Group>(null);
@@ -30,33 +32,43 @@ export function ShirtMesh({
   const target = useMemo(() => new THREE.Vector3(...targetPosition), [targetPosition]);
   const current = useRef(start.clone());
   const opacity = useRef(0);
-  const scale = useRef(0.35);
+  const scale = useRef(0.2);
   const hover = useRef(false);
+  const born = useRef(performance.now());
+  const ready = useRef(false);
 
   useFrame((_, delta) => {
     if (!group.current) return;
 
-    current.current.lerp(target, 1 - Math.exp(-4.2 * delta));
+    const elapsed = (performance.now() - born.current) / 1000;
+    if (!ready.current && elapsed < delay) {
+      group.current.visible = false;
+      return;
+    }
+    ready.current = true;
+    group.current.visible = true;
+
+    const lerp = 1 - Math.exp(-(selected ? 5.2 : 3.8) * delta);
+    current.current.lerp(target, lerp);
     group.current.position.copy(current.current);
 
-    const wantOpacity = visible ? (dimmed ? 0.18 : 1) : 0;
-    opacity.current = THREE.MathUtils.damp(opacity.current, wantOpacity, 6, delta);
+    const wantOpacity = visible ? (dimmed ? 0.16 : 1) : 0;
+    opacity.current = THREE.MathUtils.damp(opacity.current, wantOpacity, 5.5, delta);
     scale.current = THREE.MathUtils.damp(
       scale.current,
-      visible ? (selected ? 1.15 : hover.current ? 1.06 : 1) : 0.35,
-      7,
+      visible ? (selected ? 1.18 : hover.current ? 1.05 : 1) : 0.2,
+      selected ? 8 : 5.5,
       delta,
     );
     group.current.scale.setScalar(scale.current);
 
-    const bob = Math.sin(Date.now() * 0.0015 + target.x) * 0.04;
+    const bob = Math.sin(Date.now() * 0.0012 + target.x * 1.4) * (selected ? 0.02 : 0.045);
     group.current.position.y = current.current.y + bob;
-    group.current.rotation.y = THREE.MathUtils.damp(
-      group.current.rotation.y,
-      selected ? 0.15 : hover.current ? 0.25 : 0.08,
-      4,
-      delta,
-    );
+
+    const wantRotY = selected ? 0.12 : hover.current ? 0.18 : 0.06;
+    const wantRotX = selected ? -0.04 : hover.current ? -0.06 : -0.02;
+    group.current.rotation.y = THREE.MathUtils.damp(group.current.rotation.y, wantRotY, 4, delta);
+    group.current.rotation.x = THREE.MathUtils.damp(group.current.rotation.x, wantRotX, 4, delta);
 
     group.current.traverse((obj) => {
       const mesh = obj as THREE.Mesh;
@@ -64,7 +76,7 @@ export function ShirtMesh({
         const mat = mesh.material as THREE.MeshStandardMaterial;
         mat.transparent = true;
         mat.opacity = opacity.current;
-        mat.depthWrite = opacity.current > 0.5;
+        mat.depthWrite = opacity.current > 0.45;
       }
     });
   });
@@ -75,7 +87,7 @@ export function ShirtMesh({
       position={position}
       onClick={(e) => {
         e.stopPropagation();
-        if (visible) onSelect();
+        if (visible && ready.current) onSelect();
       }}
       onPointerOver={(e) => {
         e.stopPropagation();
@@ -87,42 +99,58 @@ export function ShirtMesh({
         document.body.style.cursor = "auto";
       }}
     >
-      {/* Torso */}
-      <mesh castShadow position={[0, 0.05, 0]}>
-        <boxGeometry args={[1.05, 1.25, 0.22]} />
-        <meshStandardMaterial color={product.color} roughness={0.72} metalness={0.05} />
+      {/* Soft torso */}
+      <mesh castShadow position={[0, 0.02, 0]}>
+        <boxGeometry args={[1.02, 1.28, 0.18]} />
+        <meshStandardMaterial color={product.color} roughness={0.78} metalness={0.02} />
       </mesh>
-      {/* Neck opening hint */}
-      <mesh position={[0, 0.72, 0.02]}>
-        <cylinderGeometry args={[0.22, 0.26, 0.12, 16]} />
-        <meshStandardMaterial color={product.color} roughness={0.75} />
+      {/* Hem taper hint */}
+      <mesh castShadow position={[0, -0.58, 0.01]}>
+        <boxGeometry args={[1.06, 0.18, 0.16]} />
+        <meshStandardMaterial color={product.color} roughness={0.8} metalness={0.02} />
+      </mesh>
+      {/* Collar ring */}
+      <mesh position={[0, 0.68, 0.01]} rotation={[0.15, 0, 0]}>
+        <torusGeometry args={[0.2, 0.045, 10, 24]} />
+        <meshStandardMaterial color={product.color} roughness={0.7} />
       </mesh>
       {/* Left sleeve */}
-      <mesh castShadow position={[-0.72, 0.38, 0]} rotation={[0, 0, 0.55]}>
-        <boxGeometry args={[0.55, 0.38, 0.2]} />
-        <meshStandardMaterial color={product.color} roughness={0.72} />
+      <mesh castShadow position={[-0.68, 0.4, 0]} rotation={[0.1, 0, 0.62]}>
+        <boxGeometry args={[0.52, 0.36, 0.17]} />
+        <meshStandardMaterial color={product.color} roughness={0.78} />
       </mesh>
       {/* Right sleeve */}
-      <mesh castShadow position={[0.72, 0.38, 0]} rotation={[0, 0, -0.55]}>
-        <boxGeometry args={[0.55, 0.38, 0.2]} />
-        <meshStandardMaterial color={product.color} roughness={0.72} />
+      <mesh castShadow position={[0.68, 0.4, 0]} rotation={[0.1, 0, -0.62]}>
+        <boxGeometry args={[0.52, 0.36, 0.17]} />
+        <meshStandardMaterial color={product.color} roughness={0.78} />
       </mesh>
-      {/* Embroidery */}
+      {/* Embroidery relief plate */}
+      <mesh position={[0, 0.08, 0.1]}>
+        <boxGeometry args={[0.72, 0.28, 0.02]} />
+        <meshStandardMaterial
+          color={product.color}
+          roughness={0.55}
+          metalness={0.08}
+          transparent
+          opacity={0.35}
+        />
+      </mesh>
       <Text
-        position={[0, 0.1, 0.12]}
-        fontSize={0.22}
+        position={[0, 0.08, 0.13]}
+        fontSize={0.2}
         color={product.accent}
         anchorX="center"
         anchorY="middle"
-        letterSpacing={0.08}
-        font={undefined}
+        letterSpacing={0.1}
+        outlineWidth={0.004}
+        outlineColor="#000000"
+        outlineOpacity={0.35}
       >
         {product.embroidery}
       </Text>
-      {/* Soft ground shadow disc */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.85, 0]}>
-        <circleGeometry args={[0.55, 24]} />
-        <meshBasicMaterial color="#000000" transparent opacity={0.25} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.9, 0]}>
+        <circleGeometry args={[0.5, 28]} />
+        <meshBasicMaterial color="#000000" transparent opacity={0.22} />
       </mesh>
     </group>
   );

@@ -28,65 +28,71 @@ export function DetailPanel({ collection, product, onClose }: DetailPanelProps) 
     <AnimatePresence>
       {product && (
         <motion.div
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center p-4 md:inset-y-0 md:right-0 md:left-auto md:w-[min(420px,42vw)] md:items-center md:p-8"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center p-4 md:inset-y-0 md:right-0 md:left-auto md:w-[min(440px,44vw)] md:items-center md:p-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
           <motion.div
-            className="pointer-events-auto w-full max-w-md border border-white/10 bg-[#141210]/95 p-6 shadow-2xl backdrop-blur-md md:p-8"
-            initial={{ y: 40, opacity: 0 }}
+            className="pointer-events-auto w-full max-w-md bg-[color-mix(in_oklab,var(--surface)_92%,black)] p-7 backdrop-blur-xl md:p-9"
+            style={{
+              boxShadow: "0 30px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06)",
+            }}
+            initial={{ y: 48, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 24, opacity: 0 }}
-            transition={{ type: "spring", damping: 26, stiffness: 260 }}
+            exit={{ y: 28, opacity: 0 }}
+            transition={{ type: "spring", damping: 28, stiffness: 280 }}
           >
-            <div className="mb-6 flex items-start justify-between gap-4">
+            <div className="mb-7 flex items-start justify-between gap-4">
               <div>
-                <p className="text-[11px] tracking-[0.25em] text-[#c8f542] uppercase">
+                <p className="eyebrow text-[var(--accent)]">
                   {collection.name}
-                  {discount > 0 ? ` · −${discount}%` : ""}
+                  {discount > 0 ? ` · −${discount}%` : " · Neu"}
                 </p>
-                <h3 className="mt-2 font-[family-name:var(--font-display)] text-4xl tracking-[0.08em]">
+                <h3 className="brand-display mt-2 text-5xl tracking-[0.05em]">
                   {product.name}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={onClose}
-                className="text-xs tracking-widest text-white/45 uppercase hover:text-white"
+                className="eyebrow pt-1 text-white/40 transition hover:text-white"
               >
                 Zurück
               </button>
             </div>
 
-            <p className="text-sm leading-relaxed text-white/65">{product.description}</p>
-            <p className="mt-3 text-xs tracking-wider text-white/40 uppercase">
+            <p className="text-sm leading-relaxed text-white/60">{product.description}</p>
+            <p className="mt-4 eyebrow text-white/30">
               Stickerei Mitte · {product.embroidery}
             </p>
 
-            <div className="mt-6 flex items-baseline gap-3">
-              <span className="font-[family-name:var(--font-display)] text-3xl tracking-wide">
-                {formatEuro(price)}
-              </span>
+            <div className="mt-8 flex items-baseline gap-3">
+              <span className="brand-display text-4xl tracking-wide">{formatEuro(price)}</span>
               {discount > 0 && (
-                <span className="text-sm text-white/35 line-through">
+                <span className="text-sm text-white/30 line-through">
                   {formatEuro(product.basePrice)}
+                </span>
+              )}
+              {discount > 0 && (
+                <span className="eyebrow bg-[var(--warm)]/20 px-2 py-1 text-[var(--warm)]">
+                  −{discount}%
                 </span>
               )}
             </div>
 
-            <div className="mt-6">
-              <p className="mb-2 text-[11px] tracking-[0.2em] text-white/45 uppercase">Größe</p>
+            <div className="mt-8">
+              <p className="eyebrow mb-3 text-white/35">Größe</p>
               <div className="flex gap-2">
                 {SIZES.map((s) => (
                   <button
                     key={s}
                     type="button"
                     onClick={() => setSize(s)}
-                    className={`min-w-12 border px-3 py-2 text-sm transition ${
+                    className={`min-w-12 px-3 py-2.5 text-sm transition ${
                       size === s
-                        ? "border-[#c8f542] bg-[#c8f542]/15 text-[#c8f542]"
-                        : "border-white/15 text-white/70 hover:border-white/40"
+                        ? "bg-[var(--accent)] text-black"
+                        : "bg-white/[0.04] text-white/65 hover:bg-white/[0.08]"
                     }`}
                   >
                     {s}
@@ -105,7 +111,7 @@ export function DetailPanel({ collection, product, onClose }: DetailPanelProps) 
                   collectionName: collection.name,
                 })
               }
-              className="mt-8 w-full bg-[#c8f542] py-3.5 font-[family-name:var(--font-display)] tracking-[0.14em] text-black uppercase transition hover:bg-[#d4ff6a]"
+              className="brand-display mt-9 w-full bg-[var(--accent)] py-4 text-lg tracking-[0.14em] text-black transition hover:brightness-110"
             >
               In den Warenkorb
             </button>
