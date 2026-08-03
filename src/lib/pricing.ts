@@ -9,6 +9,9 @@ export function getEffectivePrice(basePrice: number, collectionAge: number): num
 }
 
 export function formatEuro(amount: number): string {
+  if (Number.isInteger(amount)) {
+    return `${amount} €`;
+  }
   return new Intl.NumberFormat("de-DE", {
     style: "currency",
     currency: "EUR",

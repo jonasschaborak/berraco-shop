@@ -14,9 +14,8 @@ const sans = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "BERRACO — Drop Shop",
-  description:
-    "Kollektionen fliegen rein. Stickerei mittig. Ältere Drops bis −20%.",
+  title: "BERRACO — DROP 001 EMOTIONS",
+  description: "Heavyweight embossed tees. RAGE · HATE · LOVE · JOY · FEAR.",
 };
 
 export default function RootLayout({

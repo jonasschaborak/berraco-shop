@@ -1,48 +1,52 @@
-# BERRACO Shop-Prototyp
+# BERRACO Shop
 
-Interaktiver Drop-Shop für **berraco.de** (Meilenstein A).  
-Kein WordPress, kein echter Checkout — nur die Shop-Erfahrung lokal im Browser.
+Dark drop-shop for **berraco.de** — Layout wie Mockup (Arc-Carousel, DROP 001 EMOTIONS).
 
-## Was du siehst
+Live: https://berraco-cursor.vercel.app
 
-- Marke **BERRACO**, Shop startet direkt mit Kollektions-Reihen
-- T-Shirts fliegen als 3D-Reihe rein; Klick → andere weichen, Detail klappt auf
-- Erste Serie **Gefühle**: HASS, LIEBE, WUT, GLÜCK, FREUDE
-- Staffel-Rabatt: neueste 0 %, dann −5 %, −10 %, … max. −20 %
-- Warenkorb ist ein Mock („Checkout bald“)
-
-## Starten (wie eine Vorschau)
-
-Voraussetzung: [Node.js](https://nodejs.org/) (LTS).
+## Start
 
 ```bash
 npm install
 npm run dev
 ```
 
-Dann im Browser: [http://localhost:3000](http://localhost:3000)
+→ http://localhost:3000
 
-## Befehle
+## Neues Shirt / Shirtigo-Bilder
 
-| Befehl | Bedeutung |
-|--------|-----------|
-| `npm run dev` | Lokale Vorschau |
-| `npm run build` | Produktions-Build prüfen |
-| `npm run start` | Build lokal ausliefern |
+Alles in [`src/data/collections.ts`](src/data/collections.ts).
 
-## Projektstruktur (kurz)
+1. Produkt bei **Shirtigo** anlegen (Heavyweight Tee + Emboss/Stick).
+2. Produktfoto exportieren → nach `public/products/` legen  
+   **oder** Shirtigo-Bild-URL nutzen.
+3. Eintrag setzen:
 
-- `src/data/collections.ts` — Kollektionen & Produkte
-- `src/lib/pricing.ts` — Staffel-Rabatt (−5 % bis −20 %)
-- `src/components/shop/` — 3D-Reihen, Detail, Warenkorb-Mock
+```ts
+tee({
+  id: "emotions-love",
+  name: "LOVE",
+  emotion: "Love",
+  embroidery: "LOVE",
+  basePrice: 89,
+  color: "#0c0c0c",
+  accent: "#9b1b2e",
+  description: "Black heavyweight. Deep red emboss.",
+  image: "/products/tee-love.png", // ← hier Shirtigo-URL einsetzen
+  sku: "BER-001-LOVE",
+  shirtigoProductId: "…", // später für API
+}),
+```
 
-## WordPress / all-inkl
+Ohne `image` zeigt der Shop einen Farb-Fallback mit Stick-Text.
 
-Dein bestehendes WordPress auf **all-inkl** bleibt unberührt.  
-Dieser Prototyp läuft erst lokal (später z. B. Vercel). Domain `berraco.de` erst umbiegen, wenn der Shop steht.
+## Drops & Staffel
 
-## Nächste Schritte (nicht in A)
+- Linke Dots = Drops (DROP 001, DROP 002, …)
+- `age: 0` = voller Preis, `1` = −5 %, `2` = −10 %, … max −20 %
 
-- Echte Zahlung (Stripe), Größen-Lager, Versand
-- Finale 3D-/Stickerei-Assets
-- Domain auf den neuen Shop zeigen
+## Stack
+
+- Next.js + Tailwind + Framer Motion
+- Warenkorb-Mock (Checkout später / Stripe)
+- WordPress auf all-inkl bleibt unberührt

@@ -2,11 +2,13 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import type { Collection, Product } from "@/data/collections";
+import {
+  getProductSizes,
+  type Collection,
+  type Product,
+} from "@/data/collections";
 import { useCart } from "@/components/shop/CartProvider";
 import { formatEuro, getDiscountPercent, getEffectivePrice } from "@/lib/pricing";
-
-const SIZES = ["S", "M", "L", "XL"] as const;
 
 type DetailPanelProps = {
   collection: Collection;
@@ -16,12 +18,14 @@ type DetailPanelProps = {
 
 export function DetailPanel({ collection, product, onClose }: DetailPanelProps) {
   const { addItem } = useCart();
-  const [size, setSize] = useState<(typeof SIZES)[number]>("M");
+  const sizes = product ? getProductSizes(product) : ["S", "M", "L", "XL"];
+  const [size, setSize] = useState("M");
   const discount = getDiscountPercent(collection.age);
   const price = product ? getEffectivePrice(product.basePrice, collection.age) : 0;
 
   useEffect(() => {
-    setSize("M");
+    const next = product ? getProductSizes(product) : ["S", "M", "L", "XL"];
+    setSize(next.includes("M") ? "M" : next[0] ?? "M");
   }, [product?.id]);
 
   return (
@@ -83,8 +87,8 @@ export function DetailPanel({ collection, product, onClose }: DetailPanelProps) 
 
             <div className="mt-8">
               <p className="eyebrow mb-3 text-white/35">Größe</p>
-              <div className="flex gap-2">
-                {SIZES.map((s) => (
+              <div className="flex flex-wrap gap-2">
+                {sizes.map((s) => (
                   <button
                     key={s}
                     type="button"
