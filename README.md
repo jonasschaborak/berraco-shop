@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BERRACO Shop-Prototyp
 
-## Getting Started
+Interaktiver Drop-Shop für **berraco.de** (Meilenstein A).  
+Kein WordPress, kein echter Checkout — nur die Shop-Erfahrung lokal im Browser.
 
-First, run the development server:
+## Was du siehst
+
+- Marke **BERRACO**, Shop startet direkt mit Kollektions-Reihen
+- T-Shirts fliegen als 3D-Reihe rein; Klick → andere weichen, Detail klappt auf
+- Erste Serie **Gefühle**: HASS, LIEBE, WUT, GLÜCK, FREUDE
+- Staffel-Rabatt: neueste 0 %, dann −5 %, −10 %, … max. −20 %
+- Warenkorb ist ein Mock („Checkout bald“)
+
+## Starten (wie eine Vorschau)
+
+Voraussetzung: [Node.js](https://nodejs.org/) (LTS).
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Dann im Browser: [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Befehle
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Befehl | Bedeutung |
+|--------|-----------|
+| `npm run dev` | Lokale Vorschau |
+| `npm run build` | Produktions-Build prüfen |
+| `npm run start` | Build lokal ausliefern |
 
-## Learn More
+## Projektstruktur (kurz)
 
-To learn more about Next.js, take a look at the following resources:
+- `src/data/collections.ts` — Kollektionen & Produkte
+- `src/lib/pricing.ts` — Staffel-Rabatt (−5 % bis −20 %)
+- `src/components/shop/` — 3D-Reihen, Detail, Warenkorb-Mock
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## WordPress / all-inkl
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Dein bestehendes WordPress auf **all-inkl** bleibt unberührt.  
+Dieser Prototyp läuft erst lokal (später z. B. Vercel). Domain `berraco.de` erst umbiegen, wenn der Shop steht.
 
-## Deploy on Vercel
+## Nächste Schritte (nicht in A)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Echte Zahlung (Stripe), Größen-Lager, Versand
+- Finale 3D-/Stickerei-Assets
+- Domain auf den neuen Shop zeigen
